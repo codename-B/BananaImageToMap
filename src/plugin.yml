@@ -1,0 +1,6 @@
+name: BananaImageToMap
+version: 3.1
+description: Generates a world based on an image heightmap complete with custom map features
+authors: ['codename_B', 'SpaceManiac']
+main: com.ubempire.map.ImageToMapPlugin
+load: startup
