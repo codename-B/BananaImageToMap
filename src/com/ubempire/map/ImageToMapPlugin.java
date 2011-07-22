@@ -10,30 +10,16 @@ import org.bukkit.plugin.java.JavaPlugin;
  */
 public class ImageToMapPlugin extends JavaPlugin {
 
-    @SuppressWarnings("unused")
-	private boolean defaultWorld;
     private ChunkGenerator generator;
     private String imageFile;
 
     @Override
     public void onEnable() {
         PluginDescriptionFile description = getDescription();
-
-        // Read our configuration
-        imageFile = getConfiguration().getString("image", "plugins/BananaImageToMap/earth.jpg");
-        getConfiguration().save();
-
-        // Generate a new map if need be
-        if (!new File(imageFile).exists()) {
-            long start = System.currentTimeMillis();
-            System.out.println("[" + description.getName() + "] Writing heightmap to " + imageFile + "...");
-            DrawJPG.write(1024, 1024, imageFile);
-            double time = (double)((System.currentTimeMillis() - start) / 100) / 10;
-            System.out.println("[" + description.getName() + "] Completed in " + time + " seconds");
-        }
-
-  /*      
-     	// Schedule an event to create the world later.
+        File pluginDir = new File("plugins/BananaImageToMap/");
+        if (!pluginDir.exists()){pluginDir.mkdir();System.out.println(description.getFullName() + " Directory doesn't exist! Creating it.");};
+        
+      /*  // Removed, instead wait until called by bukkit.yml or an external manager
         getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
             @Override
             public void run() {
@@ -48,8 +34,8 @@ public class ImageToMapPlugin extends JavaPlugin {
                     getServer().createWorld(worldName, Environment.NORMAL, generator);
                 }
             }
-        });
-*/
+        });*/
+
         // Note here: huge success
         System.out.println(description.getFullName() + " is now enabled");
     }
@@ -61,22 +47,27 @@ public class ImageToMapPlugin extends JavaPlugin {
 
     @Override
     public ChunkGenerator getDefaultWorldGenerator(String worldName, String id) {
-        // If we get here before our scheduled event, then the plugin has been set in bukkit.yml
-        defaultWorld = true;
-        return getGenerator();
+        return getGenerator(id);
     }
 
-    private ChunkGenerator getGenerator() {
+    private ChunkGenerator getGenerator(String id) {
         if (generator == null) {
-            long start = System.currentTimeMillis();
-			System.out.println("[" + getDescription().getName() + "] Reading heightmap from " + imageFile + "...");
-			HeightMap heightMap = new HeightMap(imageFile);
-			
-			double time = (double)((System.currentTimeMillis() - start) / 100) / 10;
-			
-			System.out.println("[" + getDescription().getName() + "] Read " + heightMap.getWidth() + "x" + heightMap.getHeight() + " pixels in " + time + " seconds");
-
-			generator = new HeightMapGenerator(heightMap);
+	        // Generate a new map if need be
+		if (id == null) {id = "earth";};
+		imageFile = "plugins/BananaImageToMap/" + id + ".jpg";
+		if (!new File(imageFile).exists()) {
+			long start = System.currentTimeMillis();
+          	System.out.println("[" + getDescription().getName() + "] Writing heightmap to " + imageFile + "...");
+          	DrawJPG.write(1024, 1024, imageFile);
+          	double time = (double)((System.currentTimeMillis() - start) / 100) / 10;
+          	System.out.println("[" + getDescription().getName() + "] Completed in " + time + " seconds");
+      		}
+        long start = System.currentTimeMillis();
+		System.out.println("[" + getDescription().getName() + "] Reading heightmap from " + imageFile + "...");
+		HeightMap heightMap = new HeightMap(imageFile);
+		double time = (double)((System.currentTimeMillis() - start) / 100) / 10;
+		System.out.println("[" + getDescription().getName() + "] Read " + heightMap.getWidth() + "x" + heightMap.getHeight() + " pixels in " + time + " seconds");
+		generator = new HeightMapGenerator(heightMap);
         }
 
         return generator;
