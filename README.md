@@ -28,7 +28,7 @@ To set up a world using bukkit.yml, insert the following in your bukkit.yml conf
 		{worldname}:
 			generator: BananaImageToMap:{imagefile}
 
-Make sure to replace {imagefile} with the name of the file *including the extension* that you  
+Make sure to replace {imagefile} with the name of the file *excluding the extension (though the file must be a .jpg)* that you  
 put in your plugins/BananaImageToMap/ folder and {worldname} with the name of the world you wish to genenerate.  
 
 ### Using Multiverse 2
